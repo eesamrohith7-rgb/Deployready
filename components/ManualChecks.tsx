@@ -109,7 +109,7 @@ export default function ManualChecks(_props?: { items?: string[] }) {
             </div>
             <div className="text-xs">
               <div className="text-on-surface-variant uppercase tracking-wider mt-1">
-                Why it can't be automated
+                Why it can&apos;t be automated
               </div>
               <div className="text-white/80">{c.why}</div>
             </div>
