@@ -71,20 +71,36 @@ export default function WebAuditLanding() {
               className="flex-grow bg-transparent border-none outline-none p-0 font-mono text-code-md text-on-surface placeholder:text-on-surface-variant/50"
             />
           </div>
-          <div className="w-full bg-surface-container-lowest border border-outline-variant px-4 py-3 rounded-DEFAULT">
-            <label className="flex items-center gap-3 cursor-pointer">
-              <span className="material-symbols-outlined text-primary text-[24px]">folder_open</span>
-              <span className="font-mono text-code-md text-on-surface">
-                {files.length > 0 ? `${files.length} file(s) selected` : "Upload files or folders"}
-              </span>
-              <input
-                type="file"
-                multiple
-                {...({ webkitdirectory: "" } as any)}
-                onChange={(e) => setFiles(Array.from(e.target.files || []))}
-                className="hidden"
-              />
-            </label>
+          <div className="w-full flex gap-3">
+            <div className="flex-1 bg-surface-container-lowest border border-outline-variant px-4 py-3 rounded-DEFAULT">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <span className="material-symbols-outlined text-primary text-[24px]">upload_file</span>
+                <span className="font-mono text-code-md text-on-surface">
+                  {files.length > 0 && files[0].name ? `${files.length} file(s)` : "Upload files"}
+                </span>
+                <input
+                  type="file"
+                  multiple
+                  onChange={(e) => setFiles(Array.from(e.target.files || []))}
+                  className="hidden"
+                />
+              </label>
+            </div>
+            <div className="flex-1 bg-surface-container-lowest border border-outline-variant px-4 py-3 rounded-DEFAULT">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <span className="material-symbols-outlined text-primary text-[24px]">folder_open</span>
+                <span className="font-mono text-code-md text-on-surface">
+                  Upload folder
+                </span>
+                <input
+                  type="file"
+                  multiple
+                  {...({ webkitdirectory: "" } as any)}
+                  onChange={(e) => setFiles(Array.from(e.target.files || []))}
+                  className="hidden"
+                />
+              </label>
+            </div>
           </div>
           <button
             disabled={submitting || (!url && files.length === 0)}
