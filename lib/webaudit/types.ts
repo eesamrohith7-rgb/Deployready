@@ -27,7 +27,11 @@ export type ModuleKey =
   | "crawler"
   | "functional"
   | "api_monitor"
-  | "error_monitor";
+  | "error_monitor"
+  | "secrets"
+  | "ai_patterns"
+  | "frontend_security"
+  | "deployment_mistakes";
 
 export const ALL_MODULES: ModuleKey[] = [
   "performance",
@@ -39,6 +43,10 @@ export const ALL_MODULES: ModuleKey[] = [
   "functional",
   "api_monitor",
   "error_monitor",
+  "secrets",
+  "ai_patterns",
+  "frontend_security",
+  "deployment_mistakes",
 ];
 
 export interface ScanEvent {

@@ -13,6 +13,10 @@ const FEATURES = [
   { icon: "monitoring", title: "API Monitor", desc: "XHR / fetch durations, status codes, slowest endpoints." },
   { icon: "bug_report", title: "Errors", desc: "Console errors, unhandled exceptions, failed resources." },
   { icon: "auto_awesome", title: "AI Insights", desc: "Each module result is summarized and prioritized by an LLM." },
+  { icon: "vpn_key", title: "Secrets Scanner", desc: "Detects API keys, .env leaks, git metadata, source maps, hardcoded secrets." },
+  { icon: "psychology", title: "AI Leak Detector", desc: "Identifies AI-generated boilerplate, insecure auth patterns, exposed API routes." },
+  { icon: "shield", title: "Frontend Security", desc: "XSS, CSRF, CSP weakness, dangerous innerHTML, CORS misconfig." },
+  { icon: "cloud_upload", title: "Deployment Audit", desc: "Public staging URLs, open previews, missing HTTPS, broken auth flows." },
 ];
 
 export default function WebAuditLanding() {
@@ -112,7 +116,7 @@ export default function WebAuditLanding() {
         </form>
       </section>
 
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-10">
+      <section className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-10">
         {FEATURES.map((f) => (
           <div key={f.title} className="bento p-6 flex flex-col gap-3">
             <span className="material-symbols-outlined text-primary text-[28px]">{f.icon}</span>
