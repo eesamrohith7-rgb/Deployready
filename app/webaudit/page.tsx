@@ -17,6 +17,7 @@ const FEATURES = [
 
 export default function WebAuditLanding() {
   const [url, setUrl] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const router = useRouter();
@@ -26,10 +27,17 @@ export default function WebAuditLanding() {
     setErr(null);
     setSubmitting(true);
     try {
+      const formData = new FormData();
+      if (url) {
+        formData.append("url", url);
+      }
+      files.forEach((file, idx) => {
+        formData.append(`files`, file);
+      });
+
       const r = await fetch("/api/scans/start", {
         method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ url }),
+        body: formData,
       });
       if (!r.ok) {
         const j = await r.json().catch(() => ({}));
@@ -60,12 +68,26 @@ export default function WebAuditLanding() {
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://example.com"
-              required
               className="flex-grow bg-transparent border-none outline-none p-0 font-mono text-code-md text-on-surface placeholder:text-on-surface-variant/50"
             />
           </div>
+          <div className="w-full bg-surface-container-lowest border border-outline-variant px-4 py-3 rounded-DEFAULT">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <span className="material-symbols-outlined text-primary text-[24px]">folder_open</span>
+              <span className="font-mono text-code-md text-on-surface">
+                {files.length > 0 ? `${files.length} file(s) selected` : "Upload files or folders"}
+              </span>
+              <input
+                type="file"
+                multiple
+                {...({ webkitdirectory: "" } as any)}
+                onChange={(e) => setFiles(Array.from(e.target.files || []))}
+                className="hidden"
+              />
+            </label>
+          </div>
           <button
-            disabled={submitting}
+            disabled={submitting || (!url && files.length === 0)}
             className="bg-primary-container text-on-primary-container font-mono text-label-caps font-bold uppercase tracking-wider px-8 py-3 rounded-DEFAULT hover:shadow-[0_0_25px_rgba(243,128,32,0.5)] disabled:opacity-60"
           >
             {submitting ? "Queuing…" : "Run Full Audit"}

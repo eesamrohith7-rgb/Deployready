@@ -81,16 +81,32 @@ async function processOne(scanId: string, url: string, module: ModuleKey, total:
 const worker = new Worker<ScanJob>(
   QUEUE_NAME,
   async (job: Job<ScanJob>) => {
-    const { scanId, url, modules } = job.data;
-    logger.info({ scanId, url, modules }, "scan start");
+    const { scanId, url, modules, files } = job.data;
+    logger.info({ scanId, url, modules, files }, "scan start");
+
+    // File-based scans not yet implemented - skip for now
+    if (!url && files && files.length > 0) {
+      logger.warn({ scanId, files }, "File-based scans not yet implemented");
+      await setScanStatus(scanId, "completed", { finished_at: new Date(), overall_score: null, progress: 100, error: "File-based scans not yet implemented" });
+      await emit(scanId, { type: "scan.completed", progress: 100, message: "File-based scans not yet implemented" });
+      return;
+    }
+
+    if (!url) {
+      logger.error({ scanId }, "No URL provided for scan");
+      await setScanStatus(scanId, "failed", { error: "No URL provided", finished_at: new Date() });
+      await emit(scanId, { type: "scan.failed", error: "No URL provided" });
+      return;
+    }
+
     await setScanStatus(scanId, "running", { started_at: new Date() });
     await emit(scanId, { type: "scan.started", message: `Scanning ${url}` });
     const completed = { n: 0 };
 
     // Run modules in parallel with a small pool to keep mem/cpu reasonable
-    const pool = Math.min(3, modules.length);
+    const poolSize = Math.min(3, modules.length);
     const queue = [...modules] as ModuleKey[];
-    const workers = Array.from({ length: pool }, async () => {
+    const workers = Array.from({ length: poolSize }, async () => {
       while (queue.length) {
         const m = queue.shift()!;
         await processOne(scanId, url, m, modules.length, completed);

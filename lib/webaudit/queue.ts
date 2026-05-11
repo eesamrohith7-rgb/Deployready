@@ -5,8 +5,9 @@ export const QUEUE_NAME = "wa-scans";
 
 export type ScanJob = {
   scanId: string;
-  url: string;
+  url: string | null;
   modules: string[];
+  files?: string[];
 };
 
 // Build a fresh connection per BullMQ object (BullMQ requires its own
