@@ -9,13 +9,14 @@ export type ScanJob = {
   modules: string[];
 };
 
-// Build a fresh, lazy connection per BullMQ object (BullMQ requires its own
+// Build a fresh connection per BullMQ object (BullMQ requires its own
 // dedicated client and does not tolerate shared command/subscriber clients).
 function makeConnection() {
   return new IORedis(process.env.REDIS_URL || "redis://localhost:6379", {
     maxRetriesPerRequest: null,
     enableReadyCheck: false,
-    lazyConnect: true,
+    lazyConnect: false,
+    retryStrategy: (times: number) => (times > 8 ? null : Math.min(times * 200, 2000)),
   });
 }
 

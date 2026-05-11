@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 import { Worker, type Job } from "bullmq";
 import { QUEUE_NAME, type ScanJob } from "@/lib/webaudit/queue";
-import { redis, eventsChannel } from "@/lib/webaudit/redis";
+import IORedis from "ioredis";
+import { eventsChannel } from "@/lib/webaudit/redis";
 import { runModule } from "@/lib/webaudit/scanners";
 import { generateInsights } from "@/lib/webaudit/ai";
 import { pool, q } from "@/lib/webaudit/db";
@@ -11,9 +12,22 @@ import { logger } from "@/lib/webaudit/logger";
 
 const CONCURRENCY = Number(process.env.WORKER_CONCURRENCY || 2);
 
+// Dedicated Redis client for BullMQ (must have maxRetriesPerRequest: null)
+const bullmqRedis = new IORedis(process.env.REDIS_URL || "redis://localhost:6379", {
+  maxRetriesPerRequest: null,
+  enableReadyCheck: false,
+});
+
+// Separate Redis client for pub/sub (can have retry strategy)
+const pubsubRedis = new IORedis(process.env.REDIS_URL || "redis://localhost:6379", {
+  maxRetriesPerRequest: 3,
+  enableReadyCheck: false,
+  retryStrategy: (times: number) => (times > 8 ? null : Math.min(times * 200, 2000)),
+});
+
 async function emit(scanId: string, ev: Omit<ScanEvent, "scanId" | "ts">) {
   const payload: ScanEvent = { ...ev, scanId, ts: new Date().toISOString() };
-  await redis.publish(eventsChannel(scanId), JSON.stringify(payload));
+  await pubsubRedis.publish(eventsChannel(scanId), JSON.stringify(payload));
 }
 
 async function setScanStatus(scanId: string, status: string, extra: Record<string, any> = {}) {
@@ -94,7 +108,7 @@ const worker = new Worker<ScanJob>(
     await emit(scanId, { type: "scan.completed", progress: 100, message: `Overall ${overall ?? "—"}/100` });
     logger.info({ scanId, overall }, "scan completed");
   },
-  { connection: redis as any, concurrency: CONCURRENCY },
+  { connection: bullmqRedis as any, concurrency: CONCURRENCY },
 );
 
 worker.on("failed", async (job: Job<ScanJob> | undefined, err: Error) => {
@@ -109,7 +123,8 @@ async function shutdown(sig: string) {
   await worker.close();
   await closeBrowser();
   await pool.end();
-  await redis.quit();
+  await pubsubRedis.quit();
+  await bullmqRedis.quit();
   process.exit(0);
 }
 process.on("SIGINT", () => shutdown("SIGINT"));
