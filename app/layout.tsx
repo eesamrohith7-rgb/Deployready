@@ -10,6 +10,11 @@ export const metadata: Metadata = {
   description:
     "Execute deep security checks and performance audits instantly. SSL, DNS, headers, ports, WAF, email auth, carbon footprint and more. No login.",
   metadataBase: new URL("https://deployready.in"),
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
   openGraph: {
     title: "DeployReady",
     description:
@@ -17,6 +22,13 @@ export const metadata: Metadata = {
     url: "https://deployready.in",
     siteName: "DeployReady",
     type: "website",
+    images: [
+      {
+        url: "/logo.png",
+        width: 512,
+        height: 512,
+      },
+    ],
   },
   twitter: { card: "summary_large_image", title: "DeployReady" },
 };

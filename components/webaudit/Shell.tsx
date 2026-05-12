@@ -15,8 +15,11 @@ export default function Shell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex flex-col bg-background text-on-background">
       <header className="border-b border-outline-variant sticky top-0 z-40 bg-background/90 backdrop-blur">
         <div className="max-w-container-max mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/webaudit" className="font-mono text-code-lg font-bold text-primary tracking-tight">
-            WebAudit<span className="text-on-surface-variant">Pro</span>
+          <Link href="/webaudit" className="flex items-center gap-3">
+            <img src="/logo.png" alt="WebAudit Pro" className="h-8 w-8" />
+            <span className="font-mono text-code-lg font-bold text-primary tracking-tight">
+              WebAudit<span className="text-on-surface-variant">Pro</span>
+            </span>
           </Link>
           <nav className="flex gap-5 items-center">
             {NAV.map((n) => {
