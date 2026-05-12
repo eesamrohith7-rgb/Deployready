@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "../../Downloads/stitch_deployready_site_health_scanner/deployready_export_report"
+		},
+		{
+			"path": "../../Downloads/stitch_deployready_site_health_scanner/deployready_landing"
+		},
+		{
+			"path": "../../Downloads/stitch_deployready_site_health_scanner/deployready_manual_checks"
+		},
+		{
+			"path": "../../Downloads/stitch_deployready_site_health_scanner/deployready_scan_results"
+		},
+		{
+			"path": "../../Downloads/stitch_deployready_site_health_scanner/terminal_prime"
+		}
+	],
+	"settings": {}
+}

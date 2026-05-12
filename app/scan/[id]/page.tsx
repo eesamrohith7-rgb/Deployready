@@ -95,22 +95,22 @@ export default function ScanProgressPage() {
   return (
     <Shell>
       <section className="flex flex-col gap-4">
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="font-sans text-headline-lg">{status.scan.url}</h1>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+          <div className="min-w-0">
+            <h1 className="font-sans text-headline-md sm:text-headline-lg break-all">{status.scan.url}</h1>
             <div className="font-mono text-code-md text-on-surface-variant flex items-center gap-2">
               <span className={`w-2 h-2 rounded-full ${status.scan.status === "running" ? "bg-primary animate-pulse" : status.scan.status === "completed" ? "bg-success" : status.scan.status === "failed" ? "bg-error" : "bg-on-surface-variant"}`} />
               {status.scan.status} · {progress}%
             </div>
           </div>
-          <div className="font-sans text-headline-xl text-primary">{progress}%</div>
+          <div className="font-sans text-headline-lg sm:text-headline-xl text-primary">{progress}%</div>
         </div>
 
         <div className="thin-track">
           <span style={{ width: `${progress}%` }} />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 mt-2">
           {status.scan.modules.map((m) => {
             const meta = MODULE_META[m] || { label: m, icon: "task" };
             const row = status.results.find((r) => r.module === m);

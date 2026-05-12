@@ -69,16 +69,16 @@ export default function ReportPage() {
 
   return (
     <Shell>
-      <section className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
-        <div>
-          <h1 className="font-sans text-headline-lg">{d.scan.url}</h1>
-          <div className="font-mono text-code-md text-on-surface-variant">
+      <section className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4 mb-6">
+        <div className="min-w-0">
+          <h1 className="font-sans text-headline-md sm:text-headline-lg break-all">{d.scan.url}</h1>
+          <div className="font-mono text-code-sm sm:text-code-md text-on-surface-variant break-all">
             scan {d.scan.id} · finished {d.scan.finished_at ? new Date(d.scan.finished_at).toLocaleString() : "—"}
           </div>
         </div>
-        <div className="flex flex-col items-end gap-3">
+        <div className="flex flex-col items-start lg:items-end gap-3">
           <ReadinessBadge score={d.scan.overall_score || 0} criticalIssues={criticalCount} highIssues={highCount} />
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             <a href={`/api/reports/${d.scan.id}?format=csv`} className="btn btn-ghost">CSV</a>
             <a href={`/api/reports/${d.scan.id}`} className="btn btn-ghost">JSON</a>
             <a href={`/api/reports/${d.scan.id}/pdf`} className="btn btn-primary">PDF</a>
@@ -87,9 +87,9 @@ export default function ReportPage() {
       </section>
 
       <section className="grid grid-cols-1 md:grid-cols-12 gap-4">
-        <div className="md:col-span-4 bento p-6 flex flex-col items-center justify-center min-h-[260px]">
+        <div className="md:col-span-4 bento p-6 flex flex-col items-center justify-center min-h-[200px] md:min-h-[260px]">
           <div className="font-mono text-label-caps uppercase tracking-wider text-on-surface-variant mb-3">Overall</div>
-          <div className="font-sans text-[80px] leading-none text-primary">{d.scan.overall_score ?? "—"}</div>
+          <div className="font-sans text-[64px] sm:text-[80px] leading-none text-primary">{d.scan.overall_score ?? "—"}</div>
           <div className="font-mono text-code-md text-on-surface-variant">/100</div>
         </div>
         <div className="md:col-span-8 bento p-4 min-h-[260px]">
@@ -118,9 +118,9 @@ export default function ReportPage() {
           </ResponsiveContainer>
         </div>
 
-        <div className="md:col-span-6 bento p-4 min-h-[300px]">
+        <div className="md:col-span-6 bento p-4 min-h-[300px] overflow-x-auto">
           <div className="font-mono text-label-caps uppercase tracking-wider text-on-surface-variant mb-2">Module summary</div>
-          <table className="w-full font-mono text-code-md">
+          <table className="w-full font-mono text-code-sm sm:text-code-md">
             <thead className="text-on-surface-variant">
               <tr><th className="text-left">Module</th><th className="text-left">Status</th><th className="text-right">Score</th><th className="text-right">Duration</th></tr>
             </thead>
@@ -142,7 +142,7 @@ export default function ReportPage() {
       {d.results.find((r) => r.module === "responsive")?.data?.screenshots?.length ? (
         <section className="mt-6">
           <h2 className="font-sans text-headline-md mb-3">Responsive screenshots</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
             {d.results.find((r) => r.module === "responsive")!.data.screenshots.map((s: any) => (
               <figure key={s.label} className="bento p-3">
                 <img src={s.path} alt={s.label} className="w-full rounded" />
