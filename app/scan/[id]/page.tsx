@@ -29,6 +29,10 @@ const MODULE_META: Record<string, { label: string; icon: string }> = {
   functional: { label: "Functional", icon: "ads_click" },
   api_monitor: { label: "API Monitor", icon: "monitoring" },
   error_monitor: { label: "Errors", icon: "bug_report" },
+  secrets: { label: "Secrets", icon: "vpn_key" },
+  ai_patterns: { label: "AI Leak", icon: "psychology" },
+  frontend_security: { label: "Frontend Sec", icon: "shield" },
+  deployment_mistakes: { label: "Deployment", icon: "cloud_upload" },
 };
 
 export default function ScanProgressPage() {

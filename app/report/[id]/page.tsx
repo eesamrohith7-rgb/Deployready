@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Shell from "@/components/webaudit/Shell";
+import EvidenceViewer, { type Evidence } from "@/components/webaudit/EvidenceViewer";
+import ReadinessBadge from "@/components/webaudit/ReadinessBadge";
 import {
   Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis,
   PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart,
@@ -22,7 +24,7 @@ type Resp = {
   results: Result[];
 };
 
-const MODULES = ["performance", "seo", "security", "accessibility", "responsive", "crawler", "functional", "api_monitor", "error_monitor"];
+const MODULES = ["performance", "seo", "security", "accessibility", "responsive", "crawler", "functional", "api_monitor", "error_monitor", "secrets", "ai_patterns", "frontend_security", "deployment_mistakes"];
 
 export default function ReportPage() {
   const { id } = useParams<{ id: string }>();
@@ -40,6 +42,31 @@ export default function ReportPage() {
   }));
   const bars = d.results.map((r) => ({ module: r.module, score: r.score ?? 0 }));
 
+  // Extract security issues from new modules
+  const securityIssues: Evidence[] = [];
+  const securityModules = ["secrets", "ai_patterns", "frontend_security", "deployment_mistakes"];
+  let criticalCount = 0;
+  let highCount = 0;
+
+  securityModules.forEach((mod) => {
+    const result = d.results.find((r) => r.module === mod);
+    if (result?.data?.issues) {
+      result.data.issues.forEach((issue: any) => {
+        if (issue.severity === "critical") criticalCount++;
+        if (issue.severity === "high") highCount++;
+        securityIssues.push({
+          id: issue.id,
+          type: issue.type,
+          location: issue.location,
+          pattern: issue.pattern,
+          evidence: issue.evidence,
+          fixSuggestion: issue.fixSuggestion,
+          severity: issue.severity,
+        });
+      });
+    }
+  });
+
   return (
     <Shell>
       <section className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
@@ -49,10 +76,13 @@ export default function ReportPage() {
             scan {d.scan.id} · finished {d.scan.finished_at ? new Date(d.scan.finished_at).toLocaleString() : "—"}
           </div>
         </div>
-        <div className="flex gap-3">
-          <a href={`/api/reports/${d.scan.id}?format=csv`} className="btn btn-ghost">CSV</a>
-          <a href={`/api/reports/${d.scan.id}`} className="btn btn-ghost">JSON</a>
-          <a href={`/api/reports/${d.scan.id}/pdf`} className="btn btn-primary">PDF</a>
+        <div className="flex flex-col items-end gap-3">
+          <ReadinessBadge score={d.scan.overall_score || 0} criticalIssues={criticalCount} highIssues={highCount} />
+          <div className="flex gap-3">
+            <a href={`/api/reports/${d.scan.id}?format=csv`} className="btn btn-ghost">CSV</a>
+            <a href={`/api/reports/${d.scan.id}`} className="btn btn-ghost">JSON</a>
+            <a href={`/api/reports/${d.scan.id}/pdf`} className="btn btn-primary">PDF</a>
+          </div>
         </div>
       </section>
 
@@ -151,6 +181,13 @@ export default function ReportPage() {
           )}
         </div>
       </section>
+
+      {/* Security Evidence Viewer */}
+      {securityIssues.length > 0 && (
+        <section className="mt-6">
+          <EvidenceViewer evidences={securityIssues} />
+        </section>
+      )}
     </Shell>
   );
 }
